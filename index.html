@@ -308,27 +308,29 @@ function drawBars(box,items,opt){
     const cx=padL+slot*(i+0.5);
     const x0=cx-bw-gap/2;
     const g=el('g',{class:'bg-group'},svg);
+    const dimOp=it.dim?0.32:1;
+    if(opt.onClick){g.style.cursor='pointer';g.addEventListener('click',()=>opt.onClick(it.key))}
     // income
     const iv=it.income||0, ev=it.expense||0, mv=Math.min(it.mortgage||0,ev), ov=ev-mv;
     if(iv>0){
       const h=Math.max(1,(iv/max)*ih);
-      const r=el('rect',{x:x0,y:y(iv),width:bw,height:h,rx:Math.min(3,bw/3),fill:'#3ddc97',opacity:.92},g);
+      const r=el('rect',{x:x0,y:y(iv),width:bw,height:h,rx:Math.min(3,bw/3),fill:'#3ddc97',opacity:.92*dimOp},g);
       const tt=el('title',{},r); tt.textContent=it.label+' · доход '+money(iv);
     }
     if(ev>0){
       const x1=cx+gap/2;
       // base (non-mortgage) from bottom
       const hO=Math.max(0,(ov/max)*ih), hM=Math.max(0,(mv/max)*ih);
-      const rO=el('rect',{x:x1,y:y(ov),width:bw,height:Math.max(1,hO),rx:mv>0?0:Math.min(3,bw/3),fill:'#ff6b6b',opacity:.92},g);
+      const rO=el('rect',{x:x1,y:y(ov),width:bw,height:Math.max(1,hO),rx:mv>0?0:Math.min(3,bw/3),fill:'#ff6b6b',opacity:.92*dimOp},g);
       const tO=el('title',{},rO); tO.textContent=it.label+' · траты '+money(ev)+(mv>0?(' (в т.ч. «Мой дом» '+money(mv)+')'):'');
       if(mv>0){
-        el('rect',{x:x1,y:y(ev),width:bw,height:Math.max(1,hM),rx:Math.min(3,bw/3),fill:'#ffb454',opacity:.95},g);
+        el('rect',{x:x1,y:y(ev),width:bw,height:Math.max(1,hM),rx:Math.min(3,bw/3),fill:'#ffb454',opacity:.95*dimOp},g);
       }
     }
     // x labels
     const every=slot<(mobile?34:42)?Math.ceil((mobile?34:42)/slot):1;
     if(i%every===0||items.length<=14){
-      const t=el('text',{x:cx,y:H-6,fill:'#63718a','font-size':mobile?9:10.5,'text-anchor':'middle'},svg);
+      const t=el('text',{x:cx,y:H-6,fill:it.dim?'#39445a':'#63718a','font-size':mobile?9:10.5,'text-anchor':'middle'},svg);
       t.textContent=it.short||it.label;
     }
   });
@@ -489,9 +491,11 @@ function dayCount(){return monthsOfRange().reduce((s,m)=>s+daysIn(m),0)}
 function renderMonths(){
   const items=MONTHS.map(m=>{
     const r=collect(o=>monthKey(o.d)===m);
-    return {label:mLong(m),short:mLab(m),income:r.income,expense:r.expense,mortgage:r.mortgage};
+    return {key:m,label:mLong(m),short:mLab(m),income:r.income,expense:r.expense,mortgage:r.mortgage,
+            dim:!(m>=ST.from&&m<=ST.to)};
   });
-  drawBars(document.getElementById('chartMonths'),items,{height:window.innerWidth<560?230:300});
+  drawBars(document.getElementById('chartMonths'),items,{height:window.innerWidth<560?230:300,
+    onClick:m=>{ST.from=m;ST.to=m;syncSelects();renderAll()}});
   const t=document.getElementById('tblMonths');
   let h='<thead><tr><th>Месяц</th><th>Доходы</th><th>Траты</th><th>«Мой дом»</th><th>Обычные</th><th>Баланс</th><th>Сбереж.</th></tr></thead><tbody>';
   const prev={};
