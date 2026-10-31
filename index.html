@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0e15">
+<meta name="robots" content="noindex, nofollow">
+<title>Финансы — расходы и доходы</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#0a0e15;--card:#121a26;--card2:#0e1521;--line:rgba(255,255,255,.08);
+  --tx:#e6edf7;--mut:#8a9ab3;--dim:#63718a;
+  --inc:#3ddc97;--exp:#ff6b6b;--mort:#ffb454;--bal:#5aa9ff;--acc:#a855f7;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,Arial,sans-serif;
+  background:
+    radial-gradient(1100px 520px at 18% -180px,rgba(90,169,255,.20),transparent 60%),
+    radial-gradient(900px 460px at 90% -120px,rgba(168,85,247,.16),transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(10,14,21,.82);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 18px 9px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.brand{font-weight:700;letter-spacing:-.2px;font-size:16px;display:flex;align-items:center;gap:8px}
+.brand i{width:9px;height:9px;border-radius:3px;background:linear-gradient(135deg,var(--inc),var(--bal));display:inline-block}
+.nav{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.nav a{font-size:12.5px;color:var(--mut);text-decoration:none;padding:6px 11px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.nav a:hover{color:var(--tx);border-color:var(--line);background:rgba(255,255,255,.04)}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+.hero h1{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.6px;font-weight:750}
+.hero p{margin:0;color:var(--mut);font-size:13.5px}
+.card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px -22px #000;scroll-margin-top:132px}
+.card h2{margin:0 0 4px;font-size:15px;font-weight:650;letter-spacing:-.1px}
+.card .hint{color:var(--dim);font-size:12px;margin:0 0 14px}
+section{margin:16px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.grid2>*{min-width:0}
+/* picker */
+.picker{padding:14px 16px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font:inherit;font-size:13px;color:var(--mut);background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
+.pill:hover{color:var(--tx);border-color:rgba(255,255,255,.2)}
+.pill.on{background:linear-gradient(135deg,rgba(90,169,255,.28),rgba(168,85,247,.24));border-color:rgba(90,169,255,.6);color:#fff}
+.picker .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.picker .row+.row{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.picker .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-right:2px}
+select{font:inherit;font-size:13px;background:#0d1420;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:6px 9px;outline:none}
+select:focus{border-color:rgba(90,169,255,.6)}
+.ghost{font:inherit;font-size:12.5px;color:var(--mut);background:transparent;border:1px solid var(--line);border-radius:9px;padding:6px 11px;cursor:pointer}
+.ghost:hover{color:var(--tx);border-color:rgba(255,255,255,.22)}
+.range-note{margin-left:auto;font-size:13px;color:var(--tx);font-weight:600}
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:linear-gradient(180deg,#131c2a,#0e1521);border:1px solid var(--line);border-radius:14px;padding:13px 14px}
+.kpi .t{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.kpi .v{font-size:clamp(19px,2.4vw,24px);font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--mut);margin-top:4px}
+.kpi.inc .v{color:var(--inc)}.kpi.exp .v{color:var(--exp)}.kpi.bal .v{color:var(--bal)}
+.kpi.mort .v{color:var(--mort)}
+/* charts */
+.chart{width:100%;overflow:hidden}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px;color:var(--mut)}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+/* tables */
+.table-wrap{overflow-x:auto;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:right;font-weight:500;color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.045);white-space:nowrap}
+tr.rowm{cursor:pointer}
+tr.rowm:hover td{background:rgba(90,169,255,.07)}
+tr.inr td{background:rgba(90,169,255,.06)}
+td.pos{color:var(--inc)}td.neg{color:var(--exp)}td.mut{color:var(--mut)}
+.bar-cell{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.mini{height:5px;border-radius:3px;background:var(--acc);display:inline-block;opacity:.85}
+.cat-name{display:flex;align-items:center;gap:8px}
+.sw{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+/* donut */
+.donut-wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.donut-legend{flex:1 1 190px;display:flex;flex-direction:column;gap:7px;min-width:170px}
+.dl{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.dl .nm{color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.dl .vl{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.dl .pc{color:var(--dim);width:42px;text-align:right;font-size:11.5px}
+/* numbers block */
+.avg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.avg div{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.avg .t{font-size:11.5px;color:var(--dim);margin-bottom:3px}
+.avg .v{font-weight:650;font-variant-numeric:tabular-nums}
+ul.top-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+ul.top-list li{display:flex;gap:10px;align-items:baseline;font-size:13px;border-bottom:1px solid rgba(255,255,255,.045);padding-bottom:9px;min-width:0}
+ul.top-list li:last-child{border:0;padding-bottom:0}
+ul.top-list .dt{color:var(--dim);font-size:12px;min-width:52px}
+ul.top-list .tx{color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 0;min-width:0}
+ul.top-list .am{font-weight:650;font-variant-numeric:tabular-nums}
+.foot{color:var(--dim);font-size:12px;margin-top:22px;line-height:1.6}
+@media(max-width:860px){
+  .grid2{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .avg{grid-template-columns:1fr 1fr}
+  .nav{margin-left:0;width:100%;gap:4px}
+  .nav a{padding:5px 9px;font-size:12px}
+  .top-in{padding:8px 14px}
+  .wrap{padding:18px 14px 60px}
+  .card{padding:15px 14px;scroll-margin-top:150px}
+  .range-note{margin-left:0;width:100%}
+}
+@media(max-width:430px){
+  .kpis{grid-template-columns:1fr 1fr;gap:9px}
+  .kpi .v{font-size:18px}
+  .avg{grid-template-columns:1fr}
+  th,td{padding:7px 8px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><i></i>Финансы</div>
+    <nav class="nav">
+      <a href="#kpi">Сводка</a>
+      <a href="#months">Месяцы</a>
+      <a href="#weeks">Недели</a>
+      <a href="#cats">Категории</a>
+      <a href="#income">Доходы</a>
+      <a href="#sum">Итоги</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1>Расходы и доходы</h1>
+    <p>по данным Дзен-мани · только BYN · операции с <span id="firstDate"></span> по <span id="lastDate"></span> · обновлено <span id="upd"></span></p>
+  </div>
+
+  <section class="card picker" id="picker">
+    <div class="row">
+      <span class="lbl">Месяц</span>
+      <div class="pills" id="monthPills"></div>
+    </div>
+    <div class="row">
+      <span class="lbl">Период</span>
+      <select id="selFrom" aria-label="месяц с"></select>
+      <span style="color:var(--dim)">—</span>
+      <select id="selTo" aria-label="месяц по"></select>
+      <button class="ghost" id="btnAll">Весь период</button>
+      <button class="ghost" id="btn3">3 месяца</button>
+      <button class="ghost" id="btn6">6 месяцев</button>
+      <span class="range-note" id="rangeNote"></span>
+    </div>
+  </section>
+
+  <section id="kpi"><div class="kpis" id="kpis"></div></section>
+
+  <section class="card" id="months">
+    <h2>По месяцам</h2>
+    <p class="hint">Все месяцы сразу. Нажмите на столбец или строку, чтобы выбрать месяц.</p>
+    <div class="chart" id="chartMonths"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--inc)"></i>доходы</span>
+      <span><i class="dot" style="background:var(--exp)"></i>траты</span>
+      <span><i class="dot" style="background:var(--mort)"></i>из них «Мой дом» (аренда)</span>
+    </div>
+    <div class="table-wrap"><table id="tblMonths"></table></div>
+  </section>
+
+  <section class="card" id="weeks">
+    <h2>По неделям</h2>
+    <p class="hint">Календарные недели пн–вс внутри выбранного периода.</p>
+    <div class="chart" id="chartWeeks"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--inc)"></i>доходы</span>
+      <span><i class="dot" style="background:var(--exp)"></i>траты</span>
+      <span><i class="dot" style="background:var(--mort)"></i>«Мой дом»</span>
+    </div>
+    <div class="table-wrap"><table id="tblWeeks"></table></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" id="cats">
+      <h2>Категории трат</h2>
+      <p class="hint" id="catsHint">структура расходов за период</p>
+      <div class="donut-wrap">
+        <div class="chart" id="chartCats" style="flex:0 0 auto"></div>
+        <div class="donut-legend" id="legCats"></div>
+      </div>
+    </section>
+
+    <section class="card" id="income">
+      <h2>Источники дохода</h2>
+      <p class="hint" id="incHint">структура доходов за период</p>
+      <div class="donut-wrap">
+        <div class="chart" id="chartInc" style="flex:0 0 auto"></div>
+        <div class="donut-legend" id="legInc"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" id="sum">
+    <h2>Итоги и средние</h2>
+    <p class="hint" id="sumHint">средние значения за выбранный период</p>
+    <div class="avg" id="avgBox"></div>
+    <div class="grid2" style="margin-top:16px">
+      <div>
+        <h2 style="font-size:13.5px;margin-bottom:8px;color:var(--mut)">Таблица категорий</h2>
+        <div class="table-wrap"><table id="tblCats"></table></div>
+      </div>
+      <div>
+        <h2 style="font-size:13.5px;margin-bottom:8px;color:var(--mut)">Крупнейшие траты</h2>
+        <ul class="top-list" id="topExp"></ul>
+        <h2 style="font-size:13.5px;margin:18px 0 4px;color:var(--mut)">Накопительный итог</h2>
+        <p class="hint" id="cumNote" style="margin:0 0 6px"></p>
+        <div class="chart" id="chartCum"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot" id="footNote"></p>
+</main>
+
+<script>
+const DATA = {"updated":"31.10.2026","ops":[{"d":"2026-04-01","k":"e","t":"Кафе и рестораны","a":4.0},{"d":"2026-04-01","k":"i","t":"АВС","a":2728.0},{"d":"2026-04-02","k":"e","t":"Продукты","a":9.0},{"d":"2026-04-03","k":"e","t":"Продукты","a":1.5},{"d":"2026-04-06","k":"e","t":"Отдых и развлечения","a":20.0},{"d":"2026-04-06","k":"e","t":"Покупки: одежда, техника","a":3.0},{"d":"2026-04-06","k":"e","t":"Продукты","a":5.0},{"d":"2026-04-07","k":"e","t":"Продукты","a":25.0},{"d":"2026-04-07","k":"e","t":"Платежи","a":50.0},{"d":"2026-04-08","k":"e","t":"Котик","a":90.0},{"d":"2026-04-08","k":"e","t":"Здоровье","a":25.0},{"d":"2026-04-09","k":"e","t":"Продукты","a":8.0},{"d":"2026-04-10","k":"e","t":"Транспорт","a":4.0},{"d":"2026-04-10","k":"e","t":"Продукты","a":18.0},{"d":"2026-04-12","k":"e","t":"Кафе и рестораны","a":11.0},{"d":"2026-04-14","k":"e","t":"Продукты","a":24.0},{"d":"2026-04-14","k":"e","t":"Здоровье","a":17.0},{"d":"2026-04-14","k":"e","t":"Продукты","a":3.0},{"d":"2026-04-15","k":"e","t":"Ремонт","a":175.0},{"d":"2026-04-18","k":"e","t":"Подарки","a":31.0},{"d":"2026-04-18","k":"e","t":"Продукты","a":25.0},{"d":"2026-04-19","k":"e","t":"Покупки: одежда, техника","a":7.0},{"d":"2026-04-19","k":"e","t":"Здоровье","a":34.0},{"d":"2026-04-19","k":"e","t":"Забота о себе","a":60.0},{"d":"2026-04-20","k":"e","t":"Забота о себе","a":20.0},{"d":"2026-04-20","k":"e","t":"Продукты","a":6.0},{"d":"2026-04-21","k":"e","t":"Отдых и развлечения","a":8.0},{"d":"2026-04-22","k":"e","t":"Платежи","a":30.0},{"d":"2026-04-24","k":"e","t":"Котик","a":75.0},{"d":"2026-04-24","k":"e","t":"Продукты","a":10.0},{"d":"2026-04-24","k":"e","t":"Платежи","a":193.0},{"d":"2026-04-24","k":"e","t":"Мой дом","a":2102.0},{"d":"2026-04-25","k":"e","t":"Продукты","a":9.0},{"d":"2026-04-25","k":"e","t":"Платежи","a":39.0},{"d":"2026-04-26","k":"e","t":"Продукты","a":8.0},{"d":"2026-04-28","k":"e","t":"Продукты","a":3.0},{"d":"2026-04-28","k":"e","t":"Продукты","a":10.0},{"d":"2026-04-29","k":"e","t":"Продукты","a":3.0},{"d":"2026-04-30","k":"e","t":"Кафе и рестораны","a":9.0},{"d":"2026-04-30","k":"e","t":"Продукты","a":8.0},{"d":"2026-05-01","k":"e","t":"Транспорт","a":2.0},{"d":"2026-05-01","k":"e","t":"Продукты","a":3.0},{"d":"2026-05-02","k":"e","t":"Продукты","a":27.0},{"d":"2026-05-02","k":"e","t":"Продукты","a":4.0},{"d":"2026-05-02","k":"e","t":"Продукты","a":10.0},{"d":"2026-05-02","k":"i","t":"АВС","a":150.0},{"d":"2026-05-03","k":"e","t":"Вело","a":10.0},{"d":"2026-05-03","k":"e","t":"Продукты","a":8.0},{"d":"2026-05-03","k":"e","t":"Платежи","a":16.0},{"d":"2026-05-03","k":"e","t":"Покупки: одежда, техника","a":6.0},{"d":"2026-05-03","k":"e","t":"Платежи","a":35.0},{"d":"2026-05-04","k":"e","t":"Продукты","a":16.0},{"d":"2026-05-04","k":"e","t":"Продукты","a":18.0},{"d":"2026-05-06","k":"e","t":"Продукты","a":15.0},{"d":"2026-05-06","k":"i","t":"АВС","a":50.0},{"d":"2026-05-07","k":"e","t":"Котик","a":123.0},{"d":"2026-05-08","k":"e","t":"Продукты","a":6.0},{"d":"2026-05-08","k":"e","t":"Здоровье","a":35.0},{"d":"2026-05-09","k":"e","t":"Продукты","a":8.0},{"d":"2026-05-09","k":"e","t":"Услуги","a":10.0},{"d":"2026-05-09","k":"i","t":"Призенты","a":50.0},{"d":"2026-05-10","k":"e","t":"Платежи","a":35.0},{"d":"2026-05-10","k":"i","t":"АВС","a":10.0},{"d":"2026-05-11","k":"i","t":"АВС","a":45.0},{"d":"2026-05-12","k":"e","t":"Транспорт","a":10.0},{"d":"2026-05-12","k":"e","t":"Продукты","a":5.0},{"d":"2026-05-12","k":"e","t":"Продукты","a":8.0},{"d":"2026-05-13","k":"e","t":"Вело","a":17.0},{"d":"2026-05-13","k":"e","t":"Продукты","a":13.0},{"d":"2026-05-13","k":"e","t":"Котик","a":55.0},{"d":"2026-05-13","k":"i","t":"АВС","a":50.0},{"d":"2026-05-13","k":"i","t":"Призенты","a":50.0},{"d":"2026-05-14","k":"e","t":"Продукты","a":12.0},{"d":"2026-05-14","k":"e","t":"Продукты","a":3.0},{"d":"2026-05-14","k":"e","t":"Вело","a":10.0},{"d":"2026-05-15","k":"e","t":"Минск-Гродно","a":40.0},{"d":"2026-05-15","k":"e","t":"Продукты","a":8.0},{"d":"2026-05-16","k":"e","t":"Подарки","a":47.0},{"d":"2026-05-16","k":"e","t":"Минск-Гродно","a":40.0},{"d":"2026-05-16","k":"e","t":"Подарки","a":16.0},{"d":"2026-05-16","k":"i","t":"АВС","a":230.0},{"d":"2026-05-16","k":"i","t":"АВС","a":50.0},{"d":"2026-05-17","k":"e","t":"Транспорт","a":2.0},{"d":"2026-05-17","k":"e","t":"Кафе и рестораны","a":5.0},{"d":"2026-05-17","k":"e","t":"Кафе и рестораны","a":15.0},{"d":"2026-05-18","k":"e","t":"Продукты","a":11.0},{"d":"2026-05-19","k":"e","t":"Подарки","a":25.0},{"d":"2026-05-19","k":"e","t":"Продукты","a":10.0},{"d":"2026-05-20","k":"e","t":"Продукты","a":7.0},{"d":"2026-05-20","k":"e","t":"Продукты","a":27.0},{"d":"2026-05-21","k":"e","t":"Забота о себе","a":4.0},{"d":"2026-05-21","k":"e","t":"Ремонт","a":12.0},{"d":"2026-05-22","k":"e","t":"налоги","a":240.0},{"d":"2026-05-22","k":"e","t":"Забота о себе","a":16.0},{"d":"2026-05-22","k":"e","t":"Продукты","a":3.0},{"d":"2026-05-22","k":"i","t":"АВС","a":272.0},{"d":"2026-05-23","k":"e","t":"Кафе и рестораны","a":6.0},{"d":"2026-05-23","k":"e","t":"Продукты","a":5.0},{"d":"2026-05-23","k":"e","t":"Продукты","a":5.0},{"d":"2026-05-24","k":"e","t":"Продукты","a":3.0},{"d":"2026-05-24","k":"e","t":"Такси","a":6.0},{"d":"2026-05-24","k":"e","t":"Кафе и рестораны","a":15.0},{"d":"2026-05-25","k":"i","t":"АВС","a":21.0},{"d":"2026-05-26","k":"e","t":"Продукты","a":12.0},{"d":"2026-05-27","k":"e","t":"Платежи","a":27.0},{"d":"2026-05-27","k":"i","t":"Призенты","a":45.0},{"d":"2026-05-28","k":"e","t":"Платежи","a":16.0},{"d":"2026-05-28","k":"e","t":"Платежи","a":124.0},{"d":"2026-05-28","k":"e","t":"Продукты","a":5.0},{"d":"2026-05-28","k":"i","t":"АВС","a":825.0},{"d":"2026-05-29","k":"e","t":"Продукты","a":11.0},{"d":"2026-05-30","k":"e","t":"Мой дом","a":2101.0},{"d":"2026-05-30","k":"e","t":"Продукты","a":20.0},{"d":"2026-05-30","k":"i","t":"АВС","a":275.0},{"d":"2026-05-30","k":"i","t":"АВС","a":1120.0},{"d":"2026-05-31","k":"e","t":"Продукты","a":21.0},{"d":"2026-06-01","k":"e","t":"Продукты","a":8.0},{"d":"2026-06-01","k":"i","t":"АВС","a":400.0},{"d":"2026-06-02","k":"e","t":"Подарки","a":75.0},{"d":"2026-06-02","k":"e","t":"Покупки: одежда, техника","a":107.0},{"d":"2026-06-03","k":"e","t":"Платежи","a":30.0},{"d":"2026-06-03","k":"e","t":"Продукты","a":2.0},{"d":"2026-06-05","k":"e","t":"Здоровье","a":66.7},{"d":"2026-06-07","k":"e","t":"Продукты","a":6.0},{"d":"2026-06-08","k":"e","t":"Продукты","a":8.0},{"d":"2026-06-08","k":"e","t":"Продукты","a":11.0},{"d":"2026-06-09","k":"e","t":"Продукты","a":4.0},{"d":"2026-06-10","k":"e","t":"Музыка","a":10.0},{"d":"2026-06-10","k":"i","t":"Призенты","a":50.0},{"d":"2026-06-10","k":"i","t":"АВС","a":32.0},{"d":"2026-06-12","k":"e","t":"Продукты","a":24.0},{"d":"2026-06-12","k":"e","t":"Продукты","a":17.0},{"d":"2026-06-12","k":"e","t":"Здоровье","a":95.0},{"d":"2026-06-12","k":"i","t":"АВС","a":500.0},{"d":"2026-06-13","k":"e","t":"Транспорт","a":1.0},{"d":"2026-06-13","k":"e","t":"Забота о себе","a":70.0},{"d":"2026-06-13","k":"e","t":"Покупки: одежда, техника","a":5.0},{"d":"2026-06-14","k":"e","t":"Продукты","a":6.0},{"d":"2026-06-14","k":"e","t":"Подарки","a":100.0},{"d":"2026-06-15","k":"e","t":"Продукты","a":3.0},{"d":"2026-06-15","k":"e","t":"Продукты","a":10.0},{"d":"2026-06-15","k":"e","t":"Без категории","a":6.0},{"d":"2026-06-15","k":"e","t":"Продукты","a":6.0},{"d":"2026-06-16","k":"e","t":"Проезд","a":3.0},{"d":"2026-06-17","k":"e","t":"Продукты","a":1.0},{"d":"2026-06-18","k":"e","t":"Продукты","a":19.0},{"d":"2026-06-18","k":"e","t":"Котик","a":119.0},{"d":"2026-06-18","k":"e","t":"Продукты","a":3.0},{"d":"2026-06-19","k":"e","t":"Кафе и рестораны","a":3.0},{"d":"2026-06-19","k":"e","t":"Продукты","a":7.0},{"d":"2026-06-20","k":"e","t":"Подарки","a":26.0},{"d":"2026-06-21","k":"e","t":"Такси","a":10.0},{"d":"2026-06-21","k":"e","t":"Продукты","a":4.0},{"d":"2026-06-21","k":"e","t":"Отдых и развлечения","a":75.0},{"d":"2026-06-22","k":"e","t":"Продукты","a":2.0},{"d":"2026-06-23","k":"e","t":"Продукты","a":4.0},{"d":"2026-06-24","k":"e","t":"Продукты","a":3.0},{"d":"2026-06-24","k":"e","t":"Платежи","a":35.0},{"d":"2026-06-24","k":"e","t":"Котик","a":77.0},{"d":"2026-06-24","k":"i","t":"копилка","a":217.0},{"d":"2026-06-25","k":"e","t":"Продукты","a":8.0},{"d":"2026-06-25","k":"e","t":"Продукты","a":2.0},{"d":"2026-06-25","k":"e","t":"Продукты","a":20.0},{"d":"2026-06-26","k":"e","t":"Кафе и рестораны","a":35.0},{"d":"2026-06-26","k":"e","t":"Продукты","a":3.0},{"d":"2026-06-28","k":"e","t":"Продукты","a":7.0},{"d":"2026-06-28","k":"e","t":"Продукты","a":17.0},{"d":"2026-06-29","k":"e","t":"Мой дом","a":2051.0},{"d":"2026-06-29","k":"e","t":"Продукты","a":8.0},{"d":"2026-06-29","k":"i","t":"АВС","a":2050.0},{"d":"2026-07-01","k":"e","t":"Продукты","a":2.0},{"d":"2026-07-01","k":"e","t":"Кафе и рестораны","a":14.0},{"d":"2026-07-01","k":"e","t":"Продукты","a":3.0},{"d":"2026-07-01","k":"i","t":"АВС","a":15.0},{"d":"2026-07-01","k":"i","t":"АВС","a":15.0},{"d":"2026-07-02","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-02","k":"e","t":"Продукты","a":7.0},{"d":"2026-07-03","k":"e","t":"Платежи","a":96.0},{"d":"2026-07-03","k":"e","t":"Платежи","a":40.0},{"d":"2026-07-03","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-03","k":"e","t":"Платежи","a":51.0},{"d":"2026-07-05","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-06","k":"e","t":"Продукты","a":2.0},{"d":"2026-07-06","k":"e","t":"Продукты","a":10.0},{"d":"2026-07-06","k":"e","t":"Ремонт","a":29.0},{"d":"2026-07-06","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-07","k":"e","t":"Продукты","a":23.0},{"d":"2026-07-07","k":"e","t":"Ремонт","a":26.0},{"d":"2026-07-08","k":"e","t":"Продукты","a":2.0},{"d":"2026-07-08","k":"e","t":"Продукты","a":10.0},{"d":"2026-07-08","k":"e","t":"Продукты","a":6.0},{"d":"2026-07-09","k":"e","t":"Транспорт","a":5.0},{"d":"2026-07-09","k":"i","t":"АВС","a":140.0},{"d":"2026-07-10","k":"e","t":"путешествия","a":17.0},{"d":"2026-07-10","k":"e","t":"Ремонт","a":17.0},{"d":"2026-07-10","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-10","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-10","k":"i","t":"АВС","a":300.0},{"d":"2026-07-12","k":"e","t":"путешествия","a":100.0},{"d":"2026-07-12","k":"e","t":"Продукты","a":20.0},{"d":"2026-07-12","k":"e","t":"Подарки","a":27.0},{"d":"2026-07-12","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-13","k":"e","t":"Подарки","a":5.0},{"d":"2026-07-13","k":"e","t":"Транспорт","a":10.0},{"d":"2026-07-15","k":"e","t":"Продукты","a":9.0},{"d":"2026-07-16","k":"e","t":"Покупки: одежда, техника","a":20.0},{"d":"2026-07-16","k":"e","t":"Продукты","a":9.0},{"d":"2026-07-16","k":"e","t":"Транспорт","a":8.0},{"d":"2026-07-16","k":"e","t":"Транспорт","a":2.0},{"d":"2026-07-17","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-18","k":"e","t":"Продукты","a":6.0},{"d":"2026-07-18","k":"e","t":"Такси","a":16.0},{"d":"2026-07-18","k":"e","t":"Транспорт","a":2.0},{"d":"2026-07-19","k":"e","t":"Продукты","a":4.0},{"d":"2026-07-20","k":"e","t":"Продукты","a":18.0},{"d":"2026-07-20","k":"e","t":"Продукты","a":6.0},{"d":"2026-07-21","k":"e","t":"Платежи","a":65.0},{"d":"2026-07-21","k":"e","t":"Платежи","a":15.0},{"d":"2026-07-21","k":"e","t":"Платежи","a":40.0},{"d":"2026-07-21","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-21","k":"e","t":"Музыка","a":10.0},{"d":"2026-07-21","k":"e","t":"путешествия","a":188.0},{"d":"2026-07-21","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-21","k":"i","t":"Призенты","a":1000.0},{"d":"2026-07-21","k":"i","t":"АВС","a":100.0},{"d":"2026-07-21","k":"i","t":"ДЕНИС","a":188.0},{"d":"2026-07-22","k":"e","t":"Продукты","a":3.0},{"d":"2026-07-22","k":"e","t":"Продукты","a":12.0},{"d":"2026-07-22","k":"e","t":"Покупки: одежда, техника","a":33.0},{"d":"2026-07-22","k":"e","t":"Продукты","a":3.0},{"d":"2026-07-23","k":"e","t":"Продукты","a":10.0},{"d":"2026-07-23","k":"e","t":"Продукты","a":10.0},{"d":"2026-07-24","k":"e","t":"Продукты","a":7.0},{"d":"2026-07-24","k":"e","t":"Продукты","a":13.0},{"d":"2026-07-25","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-25","k":"e","t":"Кафе и рестораны","a":20.0},{"d":"2026-07-26","k":"e","t":"Кафе и рестораны","a":30.0},{"d":"2026-07-26","k":"e","t":"Транспорт","a":5.0},{"d":"2026-07-26","k":"e","t":"Такси","a":15.0},{"d":"2026-07-26","k":"e","t":"Кафе и рестораны","a":5.0},{"d":"2026-07-26","k":"e","t":"Такси","a":9.0},{"d":"2026-07-26","k":"i","t":"АВС","a":120.0},{"d":"2026-07-27","k":"e","t":"Продукты","a":8.0},{"d":"2026-07-28","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-30","k":"e","t":"Мой дом","a":2035.0},{"d":"2026-07-30","k":"e","t":"Продукты","a":6.0},{"d":"2026-07-30","k":"e","t":"Продукты","a":5.0},{"d":"2026-07-30","k":"i","t":"АВС","a":1680.0},{"d":"2026-07-30","k":"i","t":"дар","a":355.0},{"d":"2026-07-31","k":"e","t":"Корректировка","a":70.0},{"d":"2026-07-31","k":"e","t":"Продукты","a":15.0},{"d":"2026-07-31","k":"i","t":"АВС","a":27.0},{"d":"2026-08-01","k":"e","t":"Продукты","a":10.0},{"d":"2026-08-02","k":"e","t":"Котик","a":115.0},{"d":"2026-08-02","k":"e","t":"Покупки: одежда, техника","a":5.0},{"d":"2026-08-03","k":"e","t":"Платежи","a":70.0},{"d":"2026-08-03","k":"e","t":"Продукты","a":7.0},{"d":"2026-08-04","k":"e","t":"Продукты","a":27.0},{"d":"2026-08-04","k":"e","t":"Кафе и рестораны","a":15.0},{"d":"2026-08-04","k":"e","t":"Продукты","a":5.0},{"d":"2026-08-06","k":"e","t":"Продукты","a":5.0},{"d":"2026-08-07","k":"e","t":"Отдых и развлечения","a":60.0},{"d":"2026-08-07","k":"e","t":"Продукты","a":6.0},{"d":"2026-08-07","k":"i","t":"АВС","a":300.0},{"d":"2026-08-08","k":"e","t":"Транспорт","a":13.0},{"d":"2026-08-08","k":"e","t":"Продукты","a":22.0},{"d":"2026-08-08","k":"e","t":"Забота о себе","a":70.0},{"d":"2026-08-09","k":"e","t":"Продукты","a":4.0},{"d":"2026-08-09","k":"e","t":"Продукты","a":20.0},{"d":"2026-08-10","k":"e","t":"Продукты","a":13.0},{"d":"2026-08-10","k":"e","t":"Продукты","a":10.0},{"d":"2026-08-11","k":"e","t":"Продукты","a":12.0},{"d":"2026-08-12","k":"e","t":"Продукты","a":8.0},{"d":"2026-08-12","k":"e","t":"Продукты","a":5.0},{"d":"2026-08-12","k":"i","t":"АВС","a":284.0},{"d":"2026-08-13","k":"e","t":"Продукты","a":8.0},{"d":"2026-08-13","k":"e","t":"Такси","a":29.0},{"d":"2026-08-13","k":"e","t":"Котик","a":80.0},{"d":"2026-08-14","k":"e","t":"Продукты","a":16.0},{"d":"2026-08-14","k":"e","t":"Вложения 3д","a":31.0},{"d":"2026-08-15","k":"e","t":"Кафе и рестораны","a":11.0},{"d":"2026-08-16","k":"e","t":"путешествия","a":75.0},{"d":"2026-08-17","k":"e","t":"Котик","a":132.0},{"d":"2026-08-17","k":"e","t":"Здоровье","a":52.0},{"d":"2026-08-17","k":"e","t":"Здоровье","a":67.0},{"d":"2026-08-17","k":"e","t":"Такси","a":9.0},{"d":"2026-08-17","k":"i","t":"АВС","a":300.0},{"d":"2026-08-18","k":"e","t":"Продукты","a":21.0},{"d":"2026-08-19","k":"e","t":"Отдых и развлечения","a":20.0},{"d":"2026-08-19","k":"e","t":"Продукты","a":2.0},{"d":"2026-08-19","k":"e","t":"Продукты","a":9.0},{"d":"2026-08-20","k":"e","t":"Отдых и развлечения","a":29.0},{"d":"2026-08-20","k":"e","t":"Продукты","a":8.0},{"d":"2026-08-21","k":"e","t":"Продукты","a":10.0},{"d":"2026-08-21","k":"e","t":"Транспорт","a":3.0},{"d":"2026-08-21","k":"i","t":"АВС","a":300.0},{"d":"2026-08-23","k":"e","t":"Минск-Гродно","a":40.0},{"d":"2026-08-23","k":"i","t":"Призенты","a":300.0},{"d":"2026-08-24","k":"e","t":"Платежи","a":90.0},{"d":"2026-08-25","k":"e","t":"Продукты","a":2.0},{"d":"2026-08-26","k":"e","t":"Минск-Гродно","a":15.0},{"d":"2026-08-26","k":"i","t":"дар","a":1421.0},{"d":"2026-08-27","k":"e","t":"спорт","a":15.0},{"d":"2026-08-27","k":"e","t":"Кафе и рестораны","a":25.0},{"d":"2026-08-27","k":"e","t":"Продукты","a":7.0},{"d":"2026-08-27","k":"e","t":"Кафе и рестораны","a":7.0},{"d":"2026-08-28","k":"e","t":"Отдых и развлечения","a":25.0},{"d":"2026-08-28","k":"e","t":"Продукты","a":50.0},{"d":"2026-08-28","k":"e","t":"налоги","a":46.0},{"d":"2026-08-29","k":"e","t":"Платежи","a":15.0},{"d":"2026-08-29","k":"e","t":"Такси","a":16.0},{"d":"2026-08-29","k":"e","t":"Кафе и рестораны","a":38.0},{"d":"2026-08-30","k":"e","t":"Платежи","a":35.0},{"d":"2026-08-30","k":"e","t":"Кафе и рестораны","a":21.0},{"d":"2026-09-01","k":"e","t":"Котик","a":172.0},{"d":"2026-09-02","k":"e","t":"Покупки: одежда, техника","a":330.0},{"d":"2026-09-02","k":"e","t":"Услуги","a":2.0},{"d":"2026-09-02","k":"e","t":"Такси","a":35.0},{"d":"2026-09-03","k":"e","t":"Продукты","a":5.0},{"d":"2026-09-03","k":"e","t":"Продукты","a":2.0},{"d":"2026-09-03","k":"e","t":"Продукты","a":10.0},{"d":"2026-09-05","k":"e","t":"Кафе и рестораны","a":8.0},{"d":"2026-09-07","k":"e","t":"Продукты","a":15.0},{"d":"2026-09-07","k":"e","t":"Подарки","a":76.0},{"d":"2026-09-07","k":"e","t":"Кафе и рестораны","a":25.0},{"d":"2026-09-11","k":"e","t":"Такси","a":8.5},{"d":"2026-09-12","k":"e","t":"Кафе и рестораны","a":18.0},{"d":"2026-09-12","k":"e","t":"Продукты","a":3.0},{"d":"2026-09-12","k":"e","t":"Котик","a":157.0},{"d":"2026-09-14","k":"e","t":"Вложения 3д","a":31.0},{"d":"2026-09-14","k":"e","t":"Продукты","a":15.0},{"d":"2026-09-16","k":"e","t":"Продукты","a":11.0},{"d":"2026-09-21","k":"e","t":"Платежи","a":100.0},{"d":"2026-09-21","k":"e","t":"налоги","a":142.0},{"d":"2026-09-21","k":"e","t":"Кафе и рестораны","a":12.0},{"d":"2026-09-21","k":"e","t":"Продукты","a":20.0},{"d":"2026-09-21","k":"e","t":"Платежи","a":67.0},{"d":"2026-09-21","k":"e","t":"Мой дом","a":300.0},{"d":"2026-09-21","k":"e","t":"путешествия","a":50.0},{"d":"2026-09-21","k":"e","t":"Продукты","a":55.0},{"d":"2026-09-21","k":"i","t":"Призенты","a":300.0},{"d":"2026-09-21","k":"i","t":"Призенты","a":100.0},{"d":"2026-09-22","k":"e","t":"Платежи","a":12.0},{"d":"2026-09-23","k":"e","t":"спорт","a":45.0},{"d":"2026-09-23","k":"e","t":"Транспорт","a":4.0},{"d":"2026-09-23","k":"e","t":"Продукты","a":2.0},{"d":"2026-09-23","k":"e","t":"Продукты","a":5.0},{"d":"2026-09-24","k":"e","t":"Продукты","a":9.0},{"d":"2026-09-24","k":"e","t":"Кафе и рестораны","a":20.0},{"d":"2026-09-24","k":"e","t":"Вложения 3д","a":4.0},{"d":"2026-09-24","k":"i","t":"ДЕНИС","a":930.0},{"d":"2026-09-28","k":"e","t":"Продукты","a":10.0},{"d":"2026-09-28","k":"e","t":"Отдых и развлечения","a":36.0},{"d":"2026-09-28","k":"e","t":"Такси","a":25.0},{"d":"2026-09-28","k":"e","t":"Транспорт","a":10.0},{"d":"2026-09-28","k":"e","t":"Мой дом","a":3000.0},{"d":"2026-09-28","k":"e","t":"Продукты","a":15.0},{"d":"2026-09-28","k":"e","t":"Кафе и рестораны","a":30.0},{"d":"2026-09-28","k":"e","t":"Отдых и развлечения","a":30.0},{"d":"2026-09-28","k":"e","t":"путешествия","a":40.0},{"d":"2026-09-28","k":"e","t":"Такси","a":50.0},{"d":"2026-09-28","k":"e","t":"Продукты","a":20.0},{"d":"2026-09-28","k":"e","t":"Мой дом","a":700.0},{"d":"2026-09-30","k":"e","t":"Продукты","a":15.0},{"d":"2026-09-30","k":"e","t":"бытовое","a":90.0},{"d":"2026-10-05","k":"e","t":"Отдых и развлечения","a":115.0,"c":"бары с девушкой"},{"d":"2026-10-05","k":"e","t":"Забота о себе","a":80.0},{"d":"2026-10-05","k":"e","t":"Продукты","a":15.0},{"d":"2026-10-05","k":"e","t":"Корректировка","a":16.5},{"d":"2026-10-05","k":"e","t":"Транспорт","a":5.0},{"d":"2026-10-05","k":"e","t":"Продукты","a":30.0},{"d":"2026-10-05","k":"e","t":"Продукты","a":5.0},{"d":"2026-10-05","k":"e","t":"Продукты","a":3.0},{"d":"2026-10-05","k":"e","t":"Продукты","a":28.0},{"d":"2026-10-06","k":"e","t":"Платежи","a":20.0},{"d":"2026-10-08","k":"e","t":"Такси","a":12.0},{"d":"2026-10-08","k":"e","t":"Отдых и развлечения","a":40.0,"c":"кальян"},{"d":"2026-10-08","k":"e","t":"Такси","a":10.0},{"d":"2026-10-08","k":"e","t":"Продукты","a":27.0},{"d":"2026-10-08","k":"e","t":"Музыка","a":20.0},{"d":"2026-10-08","k":"e","t":"Продукты","a":35.0},{"d":"2026-10-08","k":"i","t":"дар","a":997.0},{"d":"2026-10-09","k":"e","t":"Продукты","a":8.0},{"d":"2026-10-09","k":"e","t":"Продукты","a":20.0},{"d":"2026-10-09","k":"i","t":"Тимофей","a":685.0},{"d":"2026-10-12","k":"e","t":"Вложения 3д","a":55.0},{"d":"2026-10-13","k":"e","t":"Музыка","a":16.0},{"d":"2026-10-13","k":"e","t":"Продукты","a":14.0},{"d":"2026-10-13","k":"e","t":"Вложения 3д","a":33.0},{"d":"2026-10-14","k":"e","t":"Платежи","a":60.0},{"d":"2026-10-15","k":"e","t":"Кафе и рестораны","a":5.0,"c":"кофе"},{"d":"2026-10-15","k":"e","t":"Отдых и развлечения","a":23.0,"c":"кальян"},{"d":"2026-10-15","k":"e","t":"Транспорт","a":10.0,"c":"автобус троллейбус"},{"d":"2026-10-15","k":"e","t":"Продукты","a":2.0,"c":"выпечка"},{"d":"2026-10-16","k":"e","t":"Продукты","a":16.0,"c":"пиво, чипсы, чай, фрукты"},{"d":"2026-10-16","k":"e","t":"Продукты","a":8.0,"c":"фрукты"},{"d":"2026-10-16","k":"e","t":"Продукты","a":2.0,"c":"выпечка"},{"d":"2026-10-17","k":"e","t":"Продукты","a":9.0,"c":"пиво, фрукты и чипсы"},{"d":"2026-10-18","k":"e","t":"Транспорт","a":1.0,"c":"проезд"},{"d":"2026-10-18","k":"e","t":"Отдых и развлечения","a":30.0,"c":"кальян"},{"d":"2026-10-19","k":"e","t":"Продукты","a":5.0},{"d":"2026-10-19","k":"e","t":"Вложения 3д","a":35.0,"c":"архикад"},{"d":"2026-10-19","k":"i","t":"Тимофей","a":17.0},{"d":"2026-10-20","k":"e","t":"Продукты","a":12.0},{"d":"2026-10-20","k":"e","t":"Вложения 3д","a":65.0,"c":"токены"},{"d":"2026-10-20","k":"e","t":"Продукты","a":2.0},{"d":"2026-10-21","k":"e","t":"Продукты","a":5.0},{"d":"2026-10-21","k":"e","t":"Платежи","a":5.0,"c":"велосипед"},{"d":"2026-10-21","k":"e","t":"Платежи","a":20.0,"c":"телефон"},{"d":"2026-10-21","k":"e","t":"Платежи","a":20.0,"c":"интернет"},{"d":"2026-10-21","k":"e","t":"Платежи","a":11.0,"c":"ТС"},{"d":"2026-10-21","k":"e","t":"Платежи","a":47.0,"c":"коммунальные"},{"d":"2026-10-21","k":"e","t":"налоги","a":93.0,"c":"налог"},{"d":"2026-10-21","k":"e","t":"Платежи","a":28.0,"c":"электричество"},{"d":"2026-10-22","k":"e","t":"Продукты","a":6.0},{"d":"2026-10-22","k":"e","t":"Здоровье","a":2.0},{"d":"2026-10-22","k":"e","t":"Кафе и рестораны","a":5.0},{"d":"2026-10-22","k":"i","t":"Тимофей","a":640.0},{"d":"2026-10-22","k":"i","t":"Катя Лазурит","a":1000.0},{"d":"2026-10-23","k":"e","t":"Платежи","a":12.0,"c":"телеграм"},{"d":"2026-10-23","k":"e","t":"Вложения 3д","a":35.0,"c":"курсы"},{"d":"2026-10-23","k":"e","t":"Продукты","a":5.0},{"d":"2026-10-24","k":"e","t":"Продукты","a":4.0},{"d":"2026-10-25","k":"e","t":"Продукты","a":20.0},{"d":"2026-10-26","k":"e","t":"Продукты","a":20.0},{"d":"2026-10-26","k":"i","t":"Тимофей","a":1122.0},{"d":"2026-10-27","k":"e","t":"Продукты","a":6.0},{"d":"2026-10-28","k":"e","t":"путешествия","a":1480.0},{"d":"2026-10-28","k":"e","t":"Услуги","a":6.0},{"d":"2026-10-28","k":"e","t":"Мой дом","a":725.0},{"d":"2026-10-28","k":"e","t":"Мой дом","a":1201.0},{"d":"2026-10-29","k":"e","t":"Продукты","a":8.0},{"d":"2026-10-29","k":"e","t":"Услуги","a":2.0},{"d":"2026-10-29","k":"e","t":"Такси","a":40.0,"c":"по работе"},{"d":"2026-10-30","k":"e","t":"Продукты","a":8.0},{"d":"2026-10-30","k":"e","t":"Продукты","a":6.0},{"d":"2026-10-31","k":"e","t":"Продукты","a":6.0}]};
+
+const M_SHORT=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+const M_FULL=['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+const MORTGAGE='Мой дом';
+const PALETTE=['#ff6b6b','#ffb454','#a855f7','#5aa9ff','#3ddc97','#f472b6','#38bdf8','#facc15','#fb923c','#4ade80','#c084fc','#94a3b8'];
+
+const RUFMT=new Intl.NumberFormat('ru-RU');
+const nf=n=>RUFMT.format(Math.round(n));
+const money=n=>nf(n)+' Br';
+
+function p2(n){return String(n).padStart(2,'0')}
+function parseDate(s){return new Date(s+'T00:00:00')}
+function fdate(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function weekStart(s){const d=parseDate(s);const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return fdate(d)}
+function weekEnd(ws){const d=parseDate(ws);d.setDate(d.getDate()+6);return fdate(d)}
+function monthKey(s){return s.slice(0,7)}
+function mLab(ym){const [y,m]=ym.split('-').map(Number);return M_SHORT[m-1]+' '+String(y).slice(2)}
+function mLong(ym){const [y,m]=ym.split('-').map(Number);return M_FULL[m-1]+' '+y}
+function dmLabel(s){const d=parseDate(s);return d.getDate()+' '+M_SHORT[d.getMonth()]}
+function daysIn(ym){const [y,m]=ym.split('-').map(Number);return new Date(y,m,0).getDate()}
+
+// ---- months present in data
+const MONTHS=[...new Set(DATA.ops.map(o=>monthKey(o.d)))].sort();
+const FIRST=MONTHS[0], LAST=MONTHS[MONTHS.length-1];
+
+let ST={from:LAST,to:LAST};
+
+// ---- aggregation
+function collect(pred){
+  const r={income:0,expense:0,mortgage:0,cats:new Map(),inc:new Map(),nExp:0,nInc:0,byMonth:new Map()};
+  for(const o of DATA.ops){
+    if(!pred(o))continue;
+    if(o.k==='i'){r.income+=o.a;r.inc.set(o.t,(r.inc.get(o.t)||0)+o.a);r.nInc++;}
+    else{
+      r.expense+=o.a;r.cats.set(o.t,(r.cats.get(o.t)||0)+o.a);r.nExp++;
+      if(o.t===MORTGAGE)r.mortgage+=o.a;
+    }
+  }
+  return r;
+}
+function inRange(o){const k=monthKey(o.d);return k>=ST.from&&k<=ST.to}
+
+// ---- svg helpers
+const SVGNS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function niceMax(v){
+  if(v<=0)return 100;
+  const p=Math.pow(10,Math.floor(Math.log10(v)));
+  const f=v/p;
+  const s=f<=1?1:f<=1.5?1.5:f<=2?2:f<=2.5?2.5:f<=3?3:f<=4?4:f<=5?5:f<=6?6:f<=8?8:10;
+  return s*p;
+}
+function shortNum(v){v=Math.round(v);if(Math.abs(v)>=1000)return (v/1000).toFixed(Math.abs(v)>=10000?0:1).replace('.',',')+'к';return String(v)}
+
+// ---- bar chart: groups of 2 bars (income, expense[stacked])
+function drawBars(box,items,opt){
+  opt=opt||{};
+  box.innerHTML='';
+  const W=Math.max(280,box.clientWidth||600);
+  const mobile=W<560;
+  const H=opt.height||(mobile?230:290);
+  const padL=mobile?34:46,padR=6,padT=12,padB=mobile?24:28;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img'},box);
+  const max=niceMax(Math.max(1,...items.map(i=>Math.max(i.income||0,i.expense||0))));
+  const iw=W-padL-padR, ih=H-padT-padB;
+  const y=v=>padT+ih-(v/max)*ih;
+  // grid
+  for(let i=0;i<=4;i++){
+    const v=max*i/4, yy=y(v);
+    el('line',{x1:padL,x2:W-padR,y1:yy,y2:yy,stroke:'rgba(255,255,255,'+(i===0?'.16':'.06')+')','stroke-width':1},svg);
+    const t=el('text',{x:padL-6,y:yy+3.5,fill:'#63718a','font-size':mobile?9:10.5,'text-anchor':'end'},svg);
+    t.textContent=shortNum(v);
+  }
+  const n=items.length||1;
+  const slot=iw/n;
+  const bw=Math.max(4,Math.min(opt.barWidth||26,slot*0.33));
+  const gap=Math.min(5,slot*0.06);
+  items.forEach((it,i)=>{
+    const cx=padL+slot*(i+0.5);
+    const x0=cx-bw-gap/2;
+    const g=el('g',{class:'bg-group'},svg);
+    // income
+    const iv=it.income||0, ev=it.expense||0, mv=Math.min(it.mortgage||0,ev), ov=ev-mv;
+    if(iv>0){
+      const h=Math.max(1,(iv/max)*ih);
+      const r=el('rect',{x:x0,y:y(iv),width:bw,height:h,rx:Math.min(3,bw/3),fill:'#3ddc97',opacity:.92},g);
+      const tt=el('title',{},r); tt.textContent=it.label+' · доход '+money(iv);
+    }
+    if(ev>0){
+      const x1=cx+gap/2;
+      // base (non-mortgage) from bottom
+      const hO=Math.max(0,(ov/max)*ih), hM=Math.max(0,(mv/max)*ih);
+      const rO=el('rect',{x:x1,y:y(ov),width:bw,height:Math.max(1,hO),rx:mv>0?0:Math.min(3,bw/3),fill:'#ff6b6b',opacity:.92},g);
+      const tO=el('title',{},rO); tO.textContent=it.label+' · траты '+money(ev)+(mv>0?(' (в т.ч. «Мой дом» '+money(mv)+')'):'');
+      if(mv>0){
+        el('rect',{x:x1,y:y(ev),width:bw,height:Math.max(1,hM),rx:Math.min(3,bw/3),fill:'#ffb454',opacity:.95},g);
+      }
+    }
+    // x labels
+    const every=slot<(mobile?34:42)?Math.ceil((mobile?34:42)/slot):1;
+    if(i%every===0||items.length<=14){
+      const t=el('text',{x:cx,y:H-6,fill:'#63718a','font-size':mobile?9:10.5,'text-anchor':'middle'},svg);
+      t.textContent=it.short||it.label;
+    }
+  });
+  return svg;
+}
+
+function drawDonut(box,segs,opt){
+  opt=opt||{};
+  box.innerHTML='';
+  const S=opt.size||(window.innerWidth<560?168:206);
+  box.style.width=S+'px';
+  const svg=el('svg',{viewBox:`0 0 200 200`,width:S,height:S,style:'width:'+S+'px;height:'+S+'px'},box);
+  const cx=100,cy=100,r1=88,r0=56;
+  const total=segs.reduce((s,x)=>s+x.value,0)||1;
+  let a=-Math.PI/2;
+  const totalTxt=el('text',{x:100,y:96,'text-anchor':'middle',fill:'#e6edf7','font-size':19,'font-weight':700},svg);
+  totalTxt.textContent=shortNum(total);
+  const sub=el('text',{x:100,y:112,'text-anchor':'middle',fill:'#63718a','font-size':9.5},svg);
+  sub.textContent=opt.centerLabel||'Br';
+  if(segs.length===1){
+    el('circle',{cx:100,cy:100,r:(r1+r0)/2,fill:'none',stroke:segs[0].color,'stroke-width':r1-r0},svg);
+    return svg;
+  }
+  segs.forEach(s=>{
+    const ang=(s.value/total)*Math.PI*2;
+    if(ang<=0)return;
+    const big=ang>Math.PI?1:0;
+    const a0=a,a1=a+Math.min(ang,Math.PI*2-0.0001);
+    const p=(r,ang)=>[cx+r*Math.cos(ang),cy+r*Math.sin(ang)];
+    const [x0,y0]=p(r1,a0),[x1,y1]=p(r1,a1),[x2,y2]=p(r0,a1),[x3,y3]=p(r0,a0);
+    const path=el('path',{d:`M${x0} ${y0}A${r1} ${r1} 0 ${big} 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 ${big} 0 ${x3} ${y3}Z`,fill:s.color,opacity:.92,stroke:'#0e1521','stroke-width':1},svg);
+    const tt=el('title',{},path); tt.textContent=s.label+': '+money(s.value)+' ('+(s.value/total*100).toFixed(1)+'%)';
+    a=a1;
+  });
+  return svg;
+}
+
+function drawCum(box,points,opt){
+  opt=opt||{};
+  box.innerHTML='';
+  const W=Math.max(260,box.clientWidth||400), mobile=W<520, H=opt.height||(mobile?170:200);
+  const padL=mobile?38:46,padR=8,padT=10,padB=mobile?22:26;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H},box);
+  if(!points.length)return svg;
+  const vals=points.map(p=>p.v);
+  const mx=Math.max(0,...vals), mn=Math.min(0,...vals);
+  const span=(mx-mn)||1;
+  const iw=W-padL-padR, ih=H-padT-padB;
+  const X=i=>padL+(points.length===1?iw/2:iw*i/(points.length-1));
+  const Y=v=>padT+ih-((v-mn)/span)*ih;
+  for(let i=0;i<=3;i++){
+    const v=mn+span*i/3, yy=Y(v);
+    el('line',{x1:padL,x2:W-padR,y1:yy,y2:yy,stroke:v===0?'rgba(255,255,255,.18)':'rgba(255,255,255,.06)'},svg);
+    const t=el('text',{x:padL-6,y:yy+3.5,fill:'#63718a','font-size':mobile?9:10,'text-anchor':'end'},svg);
+    t.textContent=shortNum(v);
+  }
+  let d='',area='';
+  points.forEach((p,i)=>{const x=X(i),y=Y(p.v);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)});
+  area=d+`L${X(points.length-1)} ${padT+ih}L${padL} ${padT+ih}Z`;
+  const gid='gcum';
+  const defs=el('defs',{},svg);
+  const lg=el('linearGradient',{id:gid,x1:0,y1:0,x2:0,y2:1},defs);
+  el('stop',{offset:'0%','stop-color':'#5aa9ff','stop-opacity':.35},lg);
+  el('stop',{offset:'100%','stop-color':'#5aa9ff','stop-opacity':0},lg);
+  el('path',{d:area,fill:'url(#'+gid+')'},svg);
+  el('path',{d:d,fill:'none',stroke:'#5aa9ff','stroke-width':2,'stroke-linejoin':'round'},svg);
+  points.forEach((p,i)=>{
+    const c=el('circle',{cx:X(i),cy:Y(p.v),r:points.length>24?2:3,fill:'#5aa9ff'},svg);
+    const tt=el('title',{},c); tt.textContent=p.label+': '+money(p.v);
+  });
+  const every=Math.ceil(points.length/(mobile?5:9));
+  points.forEach((p,i)=>{if(i%every===0||i===points.length-1){
+    const anc=i===0?'start':(i===points.length-1?'end':'middle');
+    const t=el('text',{x:X(i)+(i===0?2:(i===points.length-1?-2:0)),y:H-5,fill:'#63718a','font-size':mobile?9:10,'text-anchor':anc},svg);
+    t.textContent=p.short;
+  }});
+  return svg;
+}
+
+// ---- weekly data
+function weekBuckets(){
+  const map=new Map();
+  for(const o of DATA.ops){
+    if(!inRange(o))continue;
+    const ws=weekStart(o.d);
+    if(!map.has(ws))map.set(ws,{ws,income:0,expense:0,mortgage:0});
+    const b=map.get(ws);
+    if(o.k==='i')b.income+=o.a;else{b.expense+=o.a;if(o.t===MORTGAGE)b.mortgage+=o.a}
+  }
+  const lo=ST.from+'-01', hi=ST.to+'-'+p2(daysIn(ST.to));
+  const out=[...map.values()].sort((a,b)=>a.ws<b.ws?-1:1);
+  out.forEach(w=>{
+    w.from=w.ws<lo?lo:w.ws;
+    const we=weekEnd(w.ws);
+    w.to=we>hi?hi:we;
+    w.label=w.from===w.to?dmLabel(w.from):dmLabel(w.from)+' – '+dmLabel(w.to);
+  });
+  return out;
+}
+
+function monthsOfRange(){
+  const out=[];
+  for(let i=0;i<MONTHS.length;i++){const m=MONTHS[i];if(m>=ST.from&&m<=ST.to)out.push(m)}
+  return out;
+}
+
+// ---- renderers
+function renderTop(){
+  document.getElementById('firstDate').textContent=mLong(FIRST);
+  document.getElementById('lastDate').textContent=mLong(LAST);
+  document.getElementById('upd').textContent=DATA.updated;
+  const pills=document.getElementById('monthPills');
+  pills.innerHTML='';
+  MONTHS.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='pill'+(ST.from===m&&ST.to===m?' on':'');
+    b.textContent=mLab(m);
+    b.onclick=()=>{ST.from=m;ST.to=m;syncSelects();renderAll()};
+    pills.appendChild(b);
+  });
+  const sf=document.getElementById('selFrom'), st=document.getElementById('selTo');
+  sf.innerHTML='';st.innerHTML='';
+  MONTHS.forEach(m=>{
+    sf.insertAdjacentHTML('beforeend',`<option value="${m}">${mLong(m)}</option>`);
+    st.insertAdjacentHTML('beforeend',`<option value="${m}">${mLong(m)}</option>`);
+  });
+  syncSelects();
+}
+function syncSelects(){
+  document.getElementById('selFrom').value=ST.from;
+  document.getElementById('selTo').value=ST.to;
+  [...document.querySelectorAll('#monthPills .pill')].forEach((b,i)=>{
+    b.classList.toggle('on',MONTHS[i]===ST.from&&ST.from===ST.to);
+  });
+}
+
+function renderKpis(){
+  const r=collect(inRange);
+  const ms=monthsOfRange();
+  const n=ms.length||1;
+  const bal=r.income-r.expense;
+  const normal=r.expense-r.mortgage;
+  const rate=r.income>0?(bal/r.income*100):0;
+  const boxes=[
+    {t:'Доходы',v:money(r.income),s:'среднее '+money(r.income/n)+' / мес',c:'inc'},
+    {t:'Траты',v:money(r.expense),s:'обычные '+money(normal)+' без аренды',c:'exp'},
+    {t:'Баланс',v:(bal>=0?'+':'−')+money(Math.abs(bal)),s:'доходы − траты',c:'bal'},
+    {t:'«Мой дом»',v:money(r.mortgage),s:'аренда, '+Math.round(r.mortgage/(r.expense||1)*100)+'% трат',c:'mort'},
+    {t:'Норма сбережений',v:(rate>=0?'':'−')+Math.abs(rate).toFixed(0)+'%',s:'доля дохода, оставшаяся после трат',c:''},
+    {t:'Средние траты / мес',v:money(r.expense/n),s:'без аренды '+money(normal/n),c:''},
+    {t:'Средние траты / нед',v:money(r.expense/(dayCount()/7)),s:'по календарю, '+n+(n===1?' месяц':' мес.'),c:''},
+    {t:'Операций',v:nf(r.nExp)+' / '+nf(r.nInc),s:'трат / доходов',c:''}
+  ];
+  document.getElementById('kpis').innerHTML=boxes.map(b=>`<div class="kpi ${b.c}"><div class="t">${b.t}</div><div class="v">${b.v}</div><div class="s">${b.s}</div></div>`).join('');
+}
+function dayCount(){return monthsOfRange().reduce((s,m)=>s+daysIn(m),0)}
+
+function renderMonths(){
+  const items=MONTHS.map(m=>{
+    const r=collect(o=>monthKey(o.d)===m);
+    return {label:mLong(m),short:mLab(m),income:r.income,expense:r.expense,mortgage:r.mortgage};
+  });
+  drawBars(document.getElementById('chartMonths'),items,{height:window.innerWidth<560?230:300});
+  const t=document.getElementById('tblMonths');
+  let h='<thead><tr><th>Месяц</th><th>Доходы</th><th>Траты</th><th>«Мой дом»</th><th>Обычные</th><th>Баланс</th><th>Сбереж.</th></tr></thead><tbody>';
+  const prev={};
+  MONTHS.forEach(m=>{
+    const r=collect(o=>monthKey(o.d)===m);
+    const bal=r.income-r.expense;
+    const rate=r.income?bal/r.income*100:0;
+    h+=`<tr class="rowm ${m===ST.from&&m===ST.to?'inr':''}" data-m="${m}">
+      <td>${mLong(m)}</td><td class="pos">${nf(r.income)}</td><td>${nf(r.expense)}</td>
+      <td class="mut">${nf(r.mortgage)}</td><td class="mut">${nf(r.expense-r.mortgage)}</td>
+      <td class="${bal>=0?'pos':'neg'}">${bal>=0?'+':'−'}${nf(Math.abs(bal))}</td>
+      <td class="${rate>=0?'pos':'neg'}">${rate.toFixed(0)}%</td></tr>`;
+  });
+  const tot=collect(o=>true);
+  const tb=tot.income-tot.expense;
+  h+=`</tbody><tfoot><tr style="border-top:1px solid var(--line)"><td><b>Всего</b></td><td class="pos"><b>${nf(tot.income)}</b></td>
+  <td><b>${nf(tot.expense)}</b></td><td class="mut">${nf(tot.mortgage)}</td><td class="mut">${nf(tot.expense-tot.mortgage)}</td>
+  <td class="${tb>=0?'pos':'neg'}"><b>${tb>=0?'+':'−'}${nf(Math.abs(tb))}</b></td><td>${tot.income?(tb/tot.income*100).toFixed(0):0}%</td></tr></tfoot>`;
+  t.innerHTML=h;
+  t.querySelectorAll('tr.rowm').forEach(tr=>tr.onclick=()=>{const m=tr.dataset.m;ST.from=m;ST.to=m;syncSelects();renderAll()});
+}
+
+function renderWeeks(){
+  const weeks=weekBuckets();
+  const items=weeks.map(w=>({label:w.label,short:dmLabel(w.from),income:w.income,expense:w.expense,mortgage:w.mortgage}));
+  drawBars(document.getElementById('chartWeeks'),items,{height:window.innerWidth<560?220:280,barWidth:22});
+  const t=document.getElementById('tblWeeks');
+  let h='<thead><tr><th>Неделя</th><th>Доходы</th><th>Траты</th><th>«Мой дом»</th><th>Обычные</th><th>Баланс</th></tr></thead><tbody>';
+  weeks.slice().reverse().forEach(w=>{
+    const bal=w.income-w.expense;
+    h+=`<tr><td>${w.label}</td><td class="pos">${nf(w.income)}</td>
+    <td>${nf(w.expense)}</td><td class="mut">${nf(w.mortgage)}</td><td class="mut">${nf(w.expense-w.mortgage)}</td>
+    <td class="${bal>=0?'pos':'neg'}">${bal>=0?'+':'−'}${nf(Math.abs(bal))}</td></tr>`;
+  });
+  const sum=weeks.reduce((a,w)=>({i:a.i+w.income,e:a.e+w.expense,m:a.m+w.mortgage}),{i:0,e:0,m:0});
+  h+=`</tbody><tfoot><tr style="border-top:1px solid var(--line)"><td><b>Итого</b></td><td class="pos"><b>${nf(sum.i)}</b></td>
+  <td><b>${nf(sum.e)}</b></td><td class="mut">${nf(sum.m)}</td><td class="mut">${nf(sum.e-sum.m)}</td>
+  <td class="${sum.i-sum.e>=0?'pos':'neg'}"><b>${sum.i-sum.e>=0?'+':'−'}${nf(Math.abs(sum.i-sum.e))}</b></td></tr></tfoot>`;
+  t.innerHTML=h;
+}
+
+function renderDonuts(){
+  const r=collect(inRange);
+  const cats=[...r.cats.entries()].sort((a,b)=>b[1]-a[1]);
+  const top=cats.slice(0,11);
+  const rest=cats.slice(11).reduce((s,x)=>s+x[1],0);
+  if(rest>0)top.push(['прочее',rest]);
+  const segs=top.map((x,i)=>({label:x[0],value:x[1],color:PALETTE[i%PALETTE.length]}));
+  drawDonut(document.getElementById('chartCats'),segs,{centerLabel:'траты, Br'});
+  document.getElementById('legCats').innerHTML=segs.map(s=>{
+    const pc=(s.value/(r.expense||1)*100);
+    return `<div class="dl"><i class="sw" style="background:${s.color}"></i><span class="nm" title="${s.label}">${s.label}</span><span class="vl">${nf(s.value)}</span><span class="pc">${pc.toFixed(1)}%</span></div>`;
+  }).join('')||'<div class="dl"><span class="nm">нет данных</span></div>';
+
+  const inc=[...r.inc.entries()].sort((a,b)=>b[1]-a[1]);
+  const segsI=inc.map((x,i)=>({label:x[0],value:x[1],color:PALETTE[i%PALETTE.length]}));
+  drawDonut(document.getElementById('chartInc'),segsI,{centerLabel:'доходы, Br'});
+  document.getElementById('legInc').innerHTML=segsI.map(s=>{
+    const pc=(s.value/(r.income||1)*100);
+    return `<div class="dl"><i class="sw" style="background:${s.color}"></i><span class="nm" title="${s.label}">${s.label}</span><span class="vl">${nf(s.value)}</span><span class="pc">${pc.toFixed(1)}%</span></div>`;
+  }).join('')||'<div class="dl"><span class="nm">нет данных</span></div>';
+}
+
+function renderTables(){
+  const r=collect(inRange), ms=monthsOfRange(), n=ms.length||1;
+  const cats=[...r.cats.entries()].sort((a,b)=>b[1]-a[1]);
+  const maxC=cats.length?cats[0][1]:1;
+  let h='<thead><tr><th>Категория</th><th>Сумма</th><th>Доля</th><th>Ср./мес</th><th>Оп.</th></tr></thead><tbody>';
+  cats.forEach(([name,v],i)=>{
+    h+=`<tr><td><div class="cat-name"><i class="sw" style="background:${PALETTE[i%PALETTE.length]}"></i>${name}</div></td>
+    <td>${nf(v)}</td>
+    <td class="mut"><div class="bar-cell"><span>${(v/(r.expense||1)*100).toFixed(1)}%</span><i class="mini" style="width:${Math.max(3,(v/maxC)*54)}px"></i></div></td>
+    <td>${nf(v/n)}</td><td class="mut">${DATA.ops.filter(o=>o.k==='e'&&o.t===name&&inRange(o)).length}</td></tr>`;
+  });
+  h+=`</tbody><tfoot><tr style="border-top:1px solid var(--line)"><td><b>Итого трат</b></td><td><b>${nf(r.expense)}</b></td><td class="mut">100%</td><td><b>${nf(r.expense/n)}</b></td><td class="mut">${r.nExp}</td></tr></tfoot>`;
+  document.getElementById('tblCats').innerHTML=h;
+}
+
+function renderSummary(){
+  const r=collect(inRange), ms=monthsOfRange(), n=ms.length||1, days=dayCount();
+  const bal=r.income-r.expense;
+  const avgTicket=r.nExp?r.expense/r.nExp:0;
+  const normal=r.expense-r.mortgage;
+  const boxes=[
+    ['Средний доход / мес',money(r.income/n)],
+    ['Средние траты / мес',money(r.expense/n)],
+    ['Средний баланс / мес',(bal>=0?'+':'−')+money(Math.abs(bal)/n)],
+    ['Средние траты / нед',money(r.expense/(days/7))],
+    ['Средние траты / нед без аренды',money(normal/(days/7))],
+    ['Средние траты / день',money(r.expense/days)],
+    ['Средний чек',money(avgTicket)],
+    ['Норма сбережений',(r.income?(bal/r.income*100).toFixed(0):'0')+'%'],
+    ['Дней в периоде',nf(days)+' ('+n+(n===1?' мес':' мес')+')']
+  ];
+  document.getElementById('avgBox').innerHTML=boxes.map(b=>`<div><div class="t">${b[0]}</div><div class="v">${b[1]}</div></div>`).join('');
+
+  const exp=DATA.ops.filter(o=>o.k==='e'&&inRange(o)).sort((a,b)=>b.a-a.a).slice(0,6);
+  document.getElementById('topExp').innerHTML=exp.map(o=>`<li><span class="dt">${dmLabel(o.d)}</span><span class="tx" title="${(o.c||'')}">${o.t}${o.c?' — '+o.c:''}</span><span class="am">${nf(o.a)}</span></li>`).join('')||'<li class="tx">нет данных</li>';
+
+  // cumulative weekly inside range
+  let acc=0;
+  const wk=weekBuckets();
+  const pts=wk.map(w=>{
+    acc+=w.income-w.expense;
+    return {label:w.label,short:dmLabel(w.from),v:acc};
+  });
+  drawCum(document.getElementById('chartCum'),pts,{height:window.innerWidth<560?150:190});
+  const cumNote=document.getElementById('cumNote');
+  if(cumNote)cumNote.textContent='нарастающим итогом по неделям: '+(pts.length?money(pts[pts.length-1].v):'0 Br');
+
+  document.getElementById('rangeNote').textContent=(ST.from===ST.to?mLong(ST.from):mLong(ST.from)+' — '+mLong(ST.to));
+  document.getElementById('catsHint').textContent='структура расходов: '+(ST.from===ST.to?mLong(ST.from):mLong(ST.from)+' — '+mLong(ST.to));
+  document.getElementById('incHint').textContent='источники дохода: '+(ST.from===ST.to?mLong(ST.from):mLong(ST.from)+' — '+mLong(ST.to));
+  document.getElementById('sumHint').textContent='средние значения за '+(ST.from===ST.to?mLong(ST.from):'период '+mLong(ST.from)+' — '+mLong(ST.to));
+}
+
+function renderAll(){
+  renderKpis();renderMonths();renderWeeks();renderDonuts();renderTables();renderSummary();
+}
+
+function init(){
+  renderTop();
+  document.getElementById('selFrom').onchange=e=>{
+    ST.from=e.target.value; if(ST.from>ST.to)ST.to=ST.from; syncSelects(); renderAll();
+  };
+  document.getElementById('selTo').onchange=e=>{
+    ST.to=e.target.value; if(ST.to<ST.from)ST.from=ST.to; syncSelects(); renderAll();
+  };
+  document.getElementById('btnAll').onclick=()=>{ST.from=FIRST;ST.to=LAST;syncSelects();renderAll()};
+  document.getElementById('btn3').onclick=()=>{const i=MONTHS.indexOf(LAST);ST.from=MONTHS[Math.max(0,i-2)];ST.to=LAST;syncSelects();renderAll()};
+  document.getElementById('btn6').onclick=()=>{const i=MONTHS.indexOf(LAST);ST.from=MONTHS[Math.max(0,i-5)];ST.to=LAST;syncSelects();renderAll()};
+  renderAll();
+  let tid=null;
+  window.addEventListener('resize',()=>{clearTimeout(tid);tid=setTimeout(renderAll,180)});
+  document.getElementById('footNote').innerHTML=
+    'Данные: Дзен-мани, выгрузка '+DATA.updated+'. В расчёт входят только операции в BYN (белорусские рубли). '+
+    'Переводы между счетами и обмен валюты не считаются ни тратами, ни доходами. '+
+    'Трата — операция, где деньги только уходят; доход — где только приходят. '+
+    '«Мой дом» — аренда, показана отдельно, потому что перекашивает суммы. '+
+    'Недели календарные, понедельник–воскресенье. Всего операций в расчёте: '+DATA.ops.length+'.';
+}
+init();
+</script>
+</body>
+</html>
